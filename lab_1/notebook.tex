@@ -1,0 +1,765 @@
+
+% Default to the notebook output style
+
+    
+
+
+% Inherit from the specified cell style.
+
+
+
+
+    
+\documentclass[11pt]{article}
+
+    
+    
+    \usepackage[T1]{fontenc}
+    % Nicer default font (+ math font) than Computer Modern for most use cases
+    \usepackage{mathpazo}
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % We will generate all images so they have a width \maxwidth. This means
+    % that they will get their normal width if they fit onto the page, but
+    % are scaled down if they would overflow the margins.
+    \makeatletter
+    \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+    \else\Gin@nat@width\fi}
+    \makeatother
+    \let\Oldincludegraphics\includegraphics
+    % Set max figure width to be 80% of text width, for now hardcoded.
+    \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=.8\maxwidth]{#1}}
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionLabelFormat{nolabel}{}
+    \captionsetup{labelformat=nolabel}
+
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    
+
+    
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{lab\_01}
+    
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+    \begin{document}
+    
+    
+    \maketitle
+    
+    
+
+    
+    \section{Homework 1: Linear Systems Part
+I}\label{homework-1-linear-systems-part-i}
+
+    \subsection{General Instructions}\label{general-instructions}
+
+\begin{itemize}
+\item
+  To pass this assignment requires to complete the present Jupyter
+  notebook by
+
+  \begin{itemize}
+  \tightlist
+  \item
+    providing correct answers to all the theoretical exercises, and by
+  \item
+    providing complete and runnable computer code producing the correct
+    results to all the computational problems.
+  \end{itemize}
+\item
+  For the theoretical exercises, please include intermediate steps to
+  explain how you arrive at your solution.
+\item
+  Don't overengineer your code, keep it as simple and readable as
+  possible and provide short code comments to help other people
+  understanding your code.
+\item
+  Please provide also a short summary and discussion of your results
+  including the requested output (e.g., tables, graphs etc.).
+\item
+  Up to 3 students can jointly submit the solutions (4 students if at
+  least one is an exchange student) \textbf{Only 1 student from each
+  group} is supposed to submit them.
+\end{itemize}
+
+\subparagraph{\texorpdfstring{Deadline for submission of your solutions
+is \textbf{5th of
+September}.}{Deadline for submission of your solutions is 5th of September.}}\label{deadline-for-submission-of-your-solutions-is-5th-of-september.}
+
+\subsubsection{Happy coding!}\label{happy-coding}
+
+    \textbf{And before we start:}
+
+Executing the following cell loads a non-default css style for the
+notebook. Make sure that you download the corresponding css file
+\texttt{tmas4215.css} from the \texttt{lab/styles} Blackbord folder.
+Note that the following code snippet assumes that the file resides
+inside the folder \texttt{../styles/} relative to the folder where you
+stored this notebook on you computer.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}1}]:} \PY{k+kn}{from} \PY{n+nn}{IPython}\PY{n+nn}{.}\PY{n+nn}{core}\PY{n+nn}{.}\PY{n+nn}{display} \PY{k}{import} \PY{n}{HTML}
+        \PY{k}{def} \PY{n+nf}{css\PYZus{}styling}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+            \PY{n}{styles} \PY{o}{=} \PY{n+nb}{open}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{../styles/tma4215.css}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{r}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{o}{.}\PY{n}{read}\PY{p}{(}\PY{p}{)}
+            \PY{k}{return} \PY{n}{HTML}\PY{p}{(}\PY{n}{styles}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Comment out next line and execute this cell to restore the default notebook style }
+        \PY{n}{css\PYZus{}styling}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}1}]:} <IPython.core.display.HTML object>
+\end{Verbatim}
+            
+    \subsubsection{Useful code snippets}\label{useful-code-snippets}
+
+We provide a few of code snippets to get you started in Python. Three
+dots \(\ldots\) indicate places where you have to fill in code. We start
+with importing the necessary scientific libraries and define a name
+alias for them.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}2}]:} \PY{c+c1}{\PYZsh{} Arrary and stuff }
+        \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+        \PY{c+c1}{\PYZsh{} Linear algebra solvers from scipy}
+        \PY{k+kn}{import} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{linalg} \PY{k}{as} \PY{n+nn}{la}
+        \PY{c+c1}{\PYZsh{} Basic plotting routines from the matplotlib library }
+        \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\end{Verbatim}
+
+
+    \subsection{Problem 1}\label{problem-1}
+
+Provide a complete proof of Theorem 2 from Lecture 2, following the
+outline provided there.
+
+    \textbf{Theorem 2:} Let \(A \in \mathbb{R}^{n,n}\) with \(n \geq2\) and
+assume that every leading principal submatrix of order \(k\) with \$1
+\leq k \leq n-1 \$ is invertible. Then \(A\) admits a \(LU\)
+factorization, where \(L\) is unit lower triangular of order \(n\), and
+\(R\) is upper triangular of order \(n\).
+
+\textbf{Proof by induction}
+
+\emph{Base case}: First we will show the theorem for the base case
+\(n = 2\). Let \(A^{(2)} = L^{(2)}U^{(2)}\).
+
+\[
+\begin{pmatrix} 
+a & b \\
+c & d 
+\end{pmatrix} = 
+\begin{pmatrix} 
+1 & 0 \\
+m & 1 
+\end{pmatrix}
+\begin{pmatrix} 
+u & v \\
+0 & \eta
+\end{pmatrix} =
+\begin{pmatrix} 
+u & v \\
+mu & mv + \eta
+\end{pmatrix}
+\]
+
+This gives the four equations \(u = a, v = b, m = c/u = c/a\) and
+\(\eta = d - mv = d - c\). So we see the \(LU\)-factorization exists
+when \(n = 2\).
+
+\emph{Inductive step} Now assume the theorem holds for all matrices of
+order \(k\), \(2 \leq k \leq n\), and suppose that
+\(A\in \mathbb{R}^{n+1, n+1}\). Now write \(A, L\) and \(U\) as block
+matrices:
+
+\[
+A= 
+\begin{pmatrix} 
+A^{(n)} & \mathbf{b} \\
+\mathbf{c}^T & d 
+\end{pmatrix}, \quad
+L = 
+\begin{pmatrix} 
+L^{(n)} & \mathbf{0} \\
+\mathbf{m}^T & 1 
+\end{pmatrix}, \quad
+L = 
+\begin{pmatrix} 
+U^{(n)} & \mathbf{v} \\
+\mathbf{0}^T & \eta 
+\end{pmatrix}
+\]
+
+Then we can write out the product \(A=LU\):
+
+\[
+A= 
+\begin{pmatrix} 
+L^{(n)}U^{(n)} & L^{(n)}\mathbf{v} \\
+\mathbf{m}^T U^{(n)} & \mathbf{m}^T \mathbf{v} + \eta
+\end{pmatrix}, \quad
+\]
+
+This gives the four equations:
+
+\[
+A^{(n)} = L^{(n)}U^{(n)} \\
+L^{(n)}\mathbf{v} = \mathbf{b} \\
+U^{(n)T} \mathbf{m} = \mathbf{c} \\
+\mathbf{m}^T \mathbf{v} + \eta = d \\
+\]
+
+We know by the assumptions of the theorem that \(A^{(n)}\) is
+invertible. Then we know that \(\det(A^{(n)}) \neq 0\) by the invertible
+matrix theorem. Since
+\(\det(A^{(n)}) = \det(L^{(n)}U^{(n)}) = \det(L^{(n)})\det(U^{(n)}) \neq 0\),
+both \(\det(L^{(n)})\) and \(\det(U^{(n)})\) is also have to be
+different from zero, and hence both invertible matrices
+
+    \subsection{Problem 2}\label{problem-2}
+
+    Given matrix \(A \in \mathbb{R}^{n,n}\) and
+\(\boldsymbol{b} \in \mathbb{R}^n\), the goal of this problem set is to
+compute the solution \(\boldsymbol{x}\) to the linear system
+\(A \boldsymbol{x} = \boldsymbol{b}\) numerically by implementing the
+algorithms \(A = LU\) factorization (whenever possible), and the
+backward and forward substitution steps in \texttt{Python}.
+
+As a preliminary step, please make sure that you have import
+\texttt{numpy} as \texttt{np} by executing the cell right under "Useful
+code snippets".
+
+    \textbf{a)} Implement a \texttt{Python} function \texttt{forward\_sub}:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}3}]:} \PY{k}{def} \PY{n+nf}{forward\PYZus{}sub}\PY{p}{(}\PY{n}{L}\PY{p}{,} \PY{n}{b}\PY{p}{)}\PY{p}{:}
+            \PY{n}{n} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{b}\PY{p}{)}
+            \PY{n}{y}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+            \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+                \PY{n}{y\PYZus{}temp} \PY{o}{=} \PY{n}{b}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+                \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{y\PYZus{}temp}\PY{o}{\PYZhy{}}\PY{o}{=} \PY{n}{L}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{*}\PY{n}{y}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+        
+                \PY{n}{y}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=}\PY{n}{y\PYZus{}temp}
+            \PY{k}{return} \PY{n}{y}
+\end{Verbatim}
+
+
+    \textbf{b)} Next, implement a \texttt{Python} function
+\texttt{backward\_sub}:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}4}]:} \PY{k}{def} \PY{n+nf}{backward\PYZus{}sub}\PY{p}{(}\PY{n}{U}\PY{p}{,} \PY{n}{y}\PY{p}{)}\PY{p}{:}
+        
+            \PY{c+c1}{\PYZsh{} ...}
+            \PY{n}{n} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{y}\PY{p}{)}
+            \PY{n}{x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+            \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+                \PY{n}{x\PYZus{}temp} \PY{o}{=} \PY{n}{y}\PY{p}{[}\PY{n}{n}\PY{o}{\PYZhy{}}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+        
+                \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{x\PYZus{}temp} \PY{o}{\PYZhy{}}\PY{o}{=} \PY{n}{U}\PY{p}{[}\PY{n}{n} \PY{o}{\PYZhy{}} \PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{[}\PY{n}{n} \PY{o}{\PYZhy{}} \PY{n}{j} \PY{o}{\PYZhy{}} \PY{l+m+mi}{1}\PY{p}{]} \PY{o}{*} \PY{n}{x}\PY{p}{[}\PY{n}{n} \PY{o}{\PYZhy{}} \PY{n}{j}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+                \PY{n}{x\PYZus{}temp} \PY{o}{=}\PY{n}{x\PYZus{}temp} \PY{o}{/} \PY{n}{U}\PY{p}{[}\PY{n}{n} \PY{o}{\PYZhy{}} \PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{[}\PY{n}{n} \PY{o}{\PYZhy{}} \PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+                \PY{n}{x}\PY{p}{[}\PY{n}{n} \PY{o}{\PYZhy{}} \PY{n}{i} \PY{o}{\PYZhy{}} \PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{x\PYZus{}temp}
+        
+        
+            \PY{k}{return} \PY{n}{x}
+\end{Verbatim}
+
+
+    \textbf{c)} Now, implement a Python function which computes for a given
+matrix \(A \boldsymbol{R}^{n,n}\) the \(LU\) factorization of \(A = LU\)
+((if possible). You can either base your implemenentation on the
+Banachiewicz or Crout method (explain in Lecture 3) or any method you
+might dig up from the literature. If you want, you can take some
+inspiration from the reference \textbf{YEB}, Chapter 3.3, see Program 4,
+5, 6.
+
+If the factorization fails without permutating \(A\), you should at
+least be so kind and raise an \texttt{Exception}, see
+\href{https://docs.python.org/3/tutorial/errors.html\#errors-and-exceptions}{Python
+3 tutorial, 8. Errors and Exceptions}. More specifically, you can simply
+raise an
+\href{https://docs.python.org/3/library/exceptions.html\#NotImplementedError}{NotImplementedError}
+exception.
+
+Of course, you can also implement the full \(PA = LU\) decomposition if
+you don't want to throw Exceptions around :).
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}5}]:} \PY{k}{def} \PY{n+nf}{lu\PYZus{}factor}\PY{p}{(}\PY{n}{A}\PY{p}{)}\PY{p}{:}
+            \PY{n}{n} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{A}\PY{p}{)}
+            \PY{n}{L} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{identity}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+            \PY{n}{U} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{A}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+        
+        
+            \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+                \PY{k}{if} \PY{n}{A}\PY{p}{[}\PY{n}{i}\PY{p}{,} \PY{n}{i}\PY{p}{]} \PY{o}{==} \PY{l+m+mi}{0}\PY{p}{:}
+                    \PY{k}{raise} \PY{n+ne}{Exception}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Null pivot element}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+                \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{L}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{n}{U}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{A}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{)}
+                    \PY{k}{for} \PY{n}{k} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{j}\PY{p}{)}\PY{p}{:}
+                        \PY{n}{L}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{o}{\PYZhy{}}\PY{o}{=} \PY{n}{L}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{k}\PY{p}{]}\PY{o}{*}\PY{n}{U}\PY{p}{[}\PY{n}{k}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{/}\PY{n}{U}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+        
+                \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{i}\PY{p}{,}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{U}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{o}{=} \PY{n}{A}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+                    \PY{k}{for} \PY{n}{k} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{:}
+                        \PY{n}{U}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{o}{\PYZhy{}}\PY{o}{=} \PY{n}{L}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{k}\PY{p}{]}\PY{o}{*}\PY{n}{U}\PY{p}{[}\PY{n}{k}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+        
+            \PY{k}{return} \PY{n}{L}\PY{p}{,}\PY{n}{U}
+\end{Verbatim}
+
+
+    \textbf{d)} Next, combine the Python functions you just implemented in
+a)-b) to provide solver for the linear system
+\(A \boldsymbol{x} = \boldsymbol{b}\) based on a given \(A = LU\)
+factorization.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}6}]:} \PY{k}{def} \PY{n+nf}{lu\PYZus{}solve}\PY{p}{(}\PY{n}{L}\PY{p}{,} \PY{n}{U}\PY{p}{,} \PY{n}{b}\PY{p}{)}\PY{p}{:}
+           
+            \PY{n}{y} \PY{o}{=} \PY{n}{forward\PYZus{}sub}\PY{p}{(}\PY{n}{L}\PY{p}{,}\PY{n}{b}\PY{p}{)}
+            \PY{n}{x} \PY{o}{=} \PY{n}{backward\PYZus{}sub}\PY{p}{(}\PY{n}{U}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+            
+            \PY{k}{return} \PY{n}{x}
+\end{Verbatim}
+
+
+    \textbf{e)} Finally, write a \texttt{linear\_solve} function by simply
+combining your \texttt{lu\_factor} and \texttt{lu\_solve}.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}7}]:} \PY{k}{def} \PY{n+nf}{linear\PYZus{}solve}\PY{p}{(}\PY{n}{A}\PY{p}{,} \PY{n}{b}\PY{p}{)}\PY{p}{:}
+            \PY{n}{L}\PY{p}{,} \PY{n}{U} \PY{o}{=} \PY{n}{lu\PYZus{}factor}\PY{p}{(}\PY{n}{A}\PY{p}{)}
+            \PY{n}{x} \PY{o}{=} \PY{n}{lu\PYZus{}solve}\PY{p}{(}\PY{n}{L}\PY{p}{,} \PY{n}{U}\PY{p}{,} \PY{n}{b}\PY{p}{)}
+            \PY{k}{return} \PY{n}{x}
+        
+        \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+        
+        \PY{l+s+sd}{A = np.array([[19, 13,  6, 9, 16],}
+        \PY{l+s+sd}{ [ 2, 18,  1,  1,  8],}
+        \PY{l+s+sd}{ [12, 17, 12, 10,  6],}
+        \PY{l+s+sd}{ [ 5,  4,  6, 18, 11],}
+        \PY{l+s+sd}{ [16,  7,  1, 17,  4]])}
+        \PY{l+s+sd}{x = np.array([1,1,1,1,1])}
+        
+        \PY{l+s+sd}{b = np.matmul(A,x)}
+        \PY{l+s+sd}{print(b)}
+        
+        \PY{l+s+sd}{L,U = lu\PYZus{}factor(A)}
+        \PY{l+s+sd}{print(L)}
+        \PY{l+s+sd}{print(U)}
+        \PY{l+s+sd}{print(L@U)}
+        \PY{l+s+sd}{print(linear\PYZus{}solve(A,b))}
+        \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}7}]:} '\textbackslash{}n\textbackslash{}nA = np.array([[19, 13,  6, 9, 16],\textbackslash{}n [ 2, 18,  1,  1,  8],\textbackslash{}n [12, 17, 12, 10,  6],\textbackslash{}n [ 5,  4,  6, 18, 11],\textbackslash{}n [16,  7,  1, 17,  4]])\textbackslash{}nx = np.array([1,1,1,1,1])\textbackslash{}n\textbackslash{}nb = np.matmul(A,x)\textbackslash{}nprint(b)\textbackslash{}n\textbackslash{}nL,U = lu\_factor(A)\textbackslash{}nprint(L)\textbackslash{}nprint(U)\textbackslash{}nprint(L@U)\textbackslash{}nprint(linear\_solve(A,b))\textbackslash{}n'
+\end{Verbatim}
+            
+    \textbf{f)} Use you brand new \texttt{linear\_solve} function to compute
+the solution to a non-trivial linear system. Here non-trivial means that
+\(n > 4\) :) and a non-zero right-hand side \(\boldsymbol{b}\).
+
+\emph{Hint}: To check whether your code computes the "exact" result, you
+can use the method of \textbf{manufactured solution}. In the case of
+linear systems \(A \boldsymbol{x} = \boldsymbol{b}\) this means that for
+\textbf{given/chosen} matrix \(A\) and solution vector
+\(\boldsymbol{x}\), you simply compute the resulting right-hand side
+vector \(\boldsymbol{b} = A \boldsymbol{x}\) to construct an example
+where you know the solution. When you now solve
+\(A\boldsymbol{x} = \boldsymbol{b}\) starting from \(A\),
+\(\boldsymbol{b}\), your implementation should return the correct
+\(\boldsymbol{x}\).
+
+    \subsection{Problem 3}\label{problem-3}
+
+The objective of this problem set is two-fold. First, we will have an
+actual look at the complexity of the linear solver you implemented in
+the previous problem. Second, we want to illustrate that the finite
+precision of real numbers can matter very much in actual computations.
+
+We start by introducing the \textbf{Hilbert Matrix} \(H_n\) of order
+\(n\) by \[ 
+(H_n)_{ij} = \dfrac{1}{i+j-1} \quad \text{for } 1 \leqslant i,j \leqslant n.
+\]
+
+The Hilbert matrix is readily available in the \texttt{scipy.linalg}
+module, so you simply type, e.g
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{n }\OperatorTok{=} \DecValTok{3}
+\NormalTok{A }\OperatorTok{=}\NormalTok{ la.hilbert(n)}
+\end{Highlighting}
+\end{Shaded}
+
+Recall that we imported the \texttt{linalg} module and renamed it to
+\texttt{la} via the
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ scipy.linalg }\ImportTok{as}\NormalTok{ la}
+\end{Highlighting}
+\end{Shaded}
+
+line at the beginning of this notebook.
+
+    \textbf{a)} Define the trivial righ-hand side
+\(\boldsymbol{b} = \boldsymbol{0}\) and measure the executation time for
+the various step in your linear\_solver. To do so you can use
+\texttt{\%timeit} and \texttt{\%\%timeit} magic functions in IPython,
+see
+\href{https://ipython.readthedocs.io/en/stable/interactive/magics.html\#magic-timeit}{corresponding
+documentation}.
+
+In a nutshell, \texttt{\%\%timeit} measures the executation time of an
+entire cell, while \texttt{\%timeit} only measures only the executation
+time of a single line, e.g. as in
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{%}\NormalTok{timeit my_function()}
+\end{Highlighting}
+\end{Shaded}
+
+Note that the latter might not play well with functions returning
+arguments. To this end, you can simply (re)write a linear solver in 3
+lines (1 line per cell) starting from calling your \texttt{lu\_factor}
+function and copy-pasting the lines from Step 1 to Step 2 in the
+\texttt{linear\_solve()} function. Then use the \texttt{\%\%timeit} to
+measure the executation time of each cell.
+
+To get accurate timeing results, \texttt{timeit} automatically runs the
+same code multiple times in a loop, and repeats that measurement a
+number of times. The actual number of loops and repeats is selected
+automatically and will be printed out at the end. They can also be
+manually adjusted by using
+
+\begin{verbatim}
+%%timeit -n<number_of_loops> -r<number_of_repeats>
+\end{verbatim}
+
+Now for \(n = 500, 1000, 2000, 4000\), measure the executation time for
+each step in the linear solve (factorizing, forward and backward
+substitution) and plot the execution time \(t\) against the number of
+unknowns \(n\) in a \(\log\)-\(\log\) plot, that is, \(\log(t)\) against
+\(\log(n)\). (Matplotlib has specific functions for log-log plotting)
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}8}]:} \PY{n}{n} \PY{o}{=} \PY{l+m+mi}{500}
+        \PY{n}{A} \PY{o}{=} \PY{n}{la}\PY{o}{.}\PY{n}{hilbert}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+        
+        \PY{n}{b} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{n}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}9}]:} \PY{o}{\PYZpc{}\PYZpc{}}\PY{k}{timeit} \PYZhy{}n10 \PYZhy{}r1
+        L, U = lu\PYZus{}factor(A)
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+40.2 s ± 0 ns per loop (mean ± std. dev. of 1 run, 10 loops each)
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{L}\PY{p}{,} \PY{n}{U} \PY{o}{=} \PY{n}{lu\PYZus{}factor}\PY{p}{(}\PY{n}{A}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}11}]:} \PY{o}{\PYZpc{}\PYZpc{}}\PY{k}{timeit}
+         y = forward\PYZus{}sub(L, b)
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+44 ms ± 292 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}12}]:} \PY{n}{y} \PY{o}{=} \PY{n}{forward\PYZus{}sub}\PY{p}{(}\PY{n}{L}\PY{p}{,} \PY{n}{b}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}13}]:} \PY{o}{\PYZpc{}\PYZpc{}}\PY{k}{timeit}
+         x = backward\PYZus{}sub(U, y)
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+59.3 ms ± 324 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+    \end{Verbatim}
+
+    \textbf{b)} Next, define a non-trivial vector \(\boldsymbol{b}\) by \[
+b_i = \sum_{j=1}^n (j/(i+j-1)) 
+\] so that the \textbf{exact solution} to the lineary system
+\(H_n \boldsymbol{x} = \boldsymbol{b}\) is the vector
+\(\boldsymbol{x}_{\mathrm{ex}}\) with elements
+\(x_{\mathrm{ex},i} = i\). Now solve the system using your
+\texttt{linear\_solve} function for \(n = 2, 4, 8, 16\), print the
+computed solution vector \(\boldsymbol{x}_{\mathrm{comp}}\) and compare
+it with \(\boldsymbol{x}_{\mathrm{ex}}\). In particular compute
+
+\[\|\boldsymbol{x}_{\mathrm{ex}}-\boldsymbol{x}_{\mathrm{comp}}\|_2.\]
+
+What do you observe? Can you explain your observations?
+
+\emph{Hint}: It can be shown that the condition number \(\kappa_2(H_n)\)
+scales like \[
+\kappa_2(H_n) \sim \dfrac{\left(\sqrt{2}+1\right)^{4n+4}}{2^{15/4}\sqrt{\pi n}}
+\text{as } n \to  \infty.
+\]
+
+Tabulate the approximate values of \(\kappa_2(H_n)\) for
+\(n = 2, 4, 8, 16\).
+
+This exercise was heavily inspired by Section 2.8 in \textbf{BLUB}.
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+    \end{document}
