@@ -1,17 +1,20 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import sympy as sp
+
+import matplotlib.pyplot as plt
+from matplotlib import cm
+from mpl_toolkits.mplot3d import Axes3D
 
 
 # Define index mapping
-def I(i,j,n):
-    return i + j * (n+1)
+def I(i, j, n):
+    return i + j * (n + 1)
 
 
 #########################################################################################################
 
 def fdm_poisson_2d_matrix_dense(n, I):
-    # Gridsize
+    # Grid size
     h = 1.0 / n
 
     # Total number of unknowns is N = (n+1)*(n+1)
@@ -22,53 +25,38 @@ def fdm_poisson_2d_matrix_dense(n, I):
 
     # Define FD entries of A
     hh = h * h
-    hh = 1
     for j in range(1, n):
         for i in range(1, n):
-            print("Indeks", I(i, j, n))
             A[I(i, j, n), I(i, j, n)] = 4 / hh  # U_ij, center
-            if i > 1:
-                A[I(i, j, n), I(i - 1, j, n)] = -1 / hh  # U_{i-1,j}, left
-            if i < n - 1:
-                A[I(i, j, n), I(i + 1, j, n)] = -1 / hh  # U_{i+1,j}, right
-            if j > 1:
-                A[I(i, j, n), I(i, j - 1, n)] = -1 / hh  # U_{i,j-1}, under
-            if j < n - 1:
-                A[I(i, j, n), I(i, j + 1, n)] = -1 / hh  # U_{i,j+1}, over
+            A[I(i, j, n), I(i - 1, j, n)] = -1 / hh  # U_{i-1,j}, left
+            A[I(i, j, n), I(i + 1, j, n)] = -1 / hh  # U_{i+1,j}, right
+            A[I(i, j, n), I(i, j - 1, n)] = -1 / hh  # U_{i,j-1}, under
+            A[I(i, j, n), I(i, j + 1, n)] = -1 / hh  # U_{i,j+1}, over
 
     # Incorporate boundary conditions
-    # Add boundary values related to unknowns from the first and last grid ROW
-    # USIKKER HER!!
-    """
+    # Add points to grid related to boundary values on the bottom and on the top.
     for j in [0, n]:
         for i in range(0, n + 1):
-            A[I(i, j, n): j] = 1
-    """
+            # print("indeks", I(i, j, n))
+            A[I(i, j, n), I(i, j, n)] = 1
 
-    """
     # Add boundary values related to unknowns from the first and last grid COLUMN
-    # USIKKER HER!!
     for i in [0, n]:
         for j in range(0, n + 1):
-            A[i: I(i, j, n)] = 1
-    """
+            # print("ind", I(i, j, n))
+            A[I(i, j, n), I(i, j, n)] = 1
 
     return A
 
 
-A = fdm_poisson_2d_matrix_dense(3, I)
-
-print(A.shape)
-print(A)
-exit()
+# A = fdm_poisson_2d_matrix_dense(3, I)
 
 
 #########################################################################################################
 
 
 # Number of subdivisions in each dimension
-n = 10
-
+n = 50
 
 # To define the grid we could use "linspace" as
 # in the first part to define subdivisions for
@@ -85,13 +73,11 @@ n = 10
 # the pure imaginary number $i = \sqrt{-1}$  which is written as "1j" in Python code.
 # So simply speaking "(N+1)*1j" reads "include the end points"
 # while (N+1) reads "exclude the end points".
-x,y = np.ogrid[0:1:(n+1)*1j, 0:1:(n+1)*1j]
-print(x)
+x, y = np.ogrid[0:1:(n + 1) * 1j, 0:1:(n + 1) * 1j]
 
-print(y)
 # Print x and y to see how they look like!
-#print(x)
-#print(y)
+# print(x)
+# print(y)
 
 
 #########################################################################################################
@@ -102,7 +88,7 @@ x_var, y_var = sp.var("x_var y_var")
 
 # Example of exact solution
 def u_ex(x, y, pck=np):
-    return pck.sin(1*pck.pi*x)*pck.sin(2*pck.pi*y)
+    return pck.sin(1 * pck.pi * x) * pck.sin(2 * pck.pi * y)
 
 
 def laplace_u(x, y):
@@ -127,31 +113,10 @@ def f(x, y):
 
 # Evaluate u on the grid. The output will be a 2 dimensional array
 # where U_ex_grid[i,j] = u_ex(x_i, y_j)
-U_ex_grid = u_ex(x,y)
-
-
-# print(U_ex_grid)
-
-"""
-plt.imshow(U_ex_grid)
-plt.xlabel("x")
-plt.show()
-
-lap = f(x, y)
-print(lap.shape)
-plt.imshow(lap)
-plt.show()
-"""
-
-# Print f_grid  to see how it looks like!
-# print(U_ex_grid)
+U_ex_grid = u_ex(x, y)
 
 
 #########################################################################################################
-
-import matplotlib.pyplot as plt
-from matplotlib import cm
-from mpl_toolkits.mplot3d import Axes3D
 
 
 def plot2D(X, Y, Z, title=""):
@@ -174,23 +139,17 @@ def plot2D(X, Y, Z, title=""):
 
 #########################################################################################################
 
-plot2D(x, y, f(x, y), title="$u(x,y)$")
+plot2D(x, y, U_ex_grid, title="$u(x,y)$")
 plt.show()
-
-
-A = fdm_poisson_2d_matrix_dense(10, I)
-print(A)
-input()
 
 #########################################################################################################
 
 # Evaluate f on the grid. The output will be a 2 dimensional array
 # where f_grid[i,j] = f(x_i, y_j)
-F_grid = f(x,y)
+F_grid = f(x, y)
 
 # Same game for boundary data g
-G_grid = g(x,y)
-
+G_grid = g(x, y)
 
 #########################################################################################################
 
@@ -207,30 +166,43 @@ G = G_grid.ravel()
 
 def apply_bcs(F, G, n, I):
     # Add boundary values related to unknowns from the first and last grid ROW
-    bc_indices = [ I(i,j,n)  for j in [0, n] for i in range(0, n+1) ]
+    bc_indices = [I(i, j, n) for j in [0, n] for i in range(0, n + 1)] + \
+                 [I(i, j, n) for i in [0, n] for j in range(0, n + 1)]
     F[bc_indices] = G[bc_indices]
 
-    # Add boundary values related to unknowns from the first and last grid COLUMN
-    bc_indices = ...
-    ...
+    return F
+
 
 #########################################################################################################
-
 
 # Linear algebra solvers from scipy
 import scipy.linalg as la
 
 # Compute the FDM matrix
-...
+A = fdm_poisson_2d_matrix_dense(n, I)
 
 # Apply bcs
-...
+F = apply_bcs(F, G, n, I)
+
+print("SOLVING")
+print(A.shape)
+print(F.shape)
 
 # Solve
-...
+U = la.solve(A, F)
 
 # Make U into a grid function for plotting
-U_grid = U.reshape((n+1,n+1))
+U_grid = U.reshape((n + 1, n + 1))
+
+print("SOLVED")
 
 # and plot f
-plot2D(x, y, U_grid, title="$u(x,y)$")
+plot2D(x, y, U_grid, title="$u(x,y) løst$")
+plt.show()
+
+
+######
+
+
+plot2D(x, y, U_ex_grid - U_grid, title="difference")
+plt.show()
