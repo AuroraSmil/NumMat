@@ -1,9 +1,34 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sympy as sp
+import scipy.sparse as sc
 
 from diff_2d import fdm_poisson_2d_matrix_dense, apply_bcs, I, plot2D
 from utils import plot_2D_animation
+
+
+def fdm_poisson_2d_matrix_sparse(n, I):
+    # Grid size
+    h = 1.0 / n
+
+    # Total number of unknowns is N = (n+1)*(n+1)
+    N = (n + 1) ** 2
+
+    # Define zero matrix A of right size and insert 0
+    A = sc.dok_matrix((N, N))
+
+    # Define FD entries of A
+    hh = h * h
+    for j in range(1, n):
+        for i in range(1, n):
+            A[I(i, j, n), I(i, j, n)] = 4 / hh  # U_ij, center
+            A[I(i, j, n), I(i - 1, j, n)] = -1 / hh  # U_{i-1,j}, left
+            A[I(i, j, n), I(i + 1, j, n)] = -1 / hh  # U_{i+1,j}, right
+            A[I(i, j, n), I(i, j - 1, n)] = -1 / hh  # U_{i,j-1}, under
+            A[I(i, j, n), I(i, j + 1, n)] = -1 / hh  # U_{i,j+1}, over
+
+    A_csr = A.tocsr()
+    return A_csr
 
 a, b = 0, 1
 n = 10
@@ -15,12 +40,9 @@ m = 10  # Time steps
 t0 = 0  # sek
 T = 1  # sek
 
-
-f = lambda x, y, t: np.ones((len(x), len(x)))
-
 x, y = np.ogrid[0:1:(n + 1) * 1j, 0:1:(n + 1) * 1j]
 
-A = fdm_poisson_2d_matrix_dense(n, I)
+A = fdm_poisson_2d_matrix_sparse(n, I)
 Id = np.eye(A.shape[0])
 
 tau = 0.1
@@ -31,6 +53,23 @@ def u_func(x, y, t, pck=np):
     k, l = pck.pi, 2*pck.pi
     mu = 1
     return pck.sin(k * x) * pck.sin(l * y) * pck.exp(-mu * t)
+
+
+
+def laplace_u(u_func, x, y, t):
+    # Automatic differerentiation of u_ex with sympy.
+    x_var, y_var, t_var = sp.var("x_var y_var t_var")
+    u_sp = u_func(x_var, y_var, t_var, sp)
+    dell_x = sp.diff(u_sp, x_var)
+    dell_y = sp.diff(u_sp, y_var)
+    # Set MINUS in front, to match diff equation
+    laplace = -(sp.diff(dell_x, x_var) + sp.diff(dell_y, y_var))
+    # Return as numpy function
+    return sp.lambdify((x_var, y_var, t_var), laplace, "numpy")(x, y, t)
+
+
+def f(x, y, t):
+    return laplace_u(u_func, x, y, t)
 
 g = u_func
 
@@ -45,6 +84,7 @@ F_k1 = f(x, y, 0).ravel().reshape((-1, 1))
 
 Us = [U_0_field]
 
+
 for k in range(m):
     U_k = U_k1
     t_k = k * (T - t0) / m
@@ -55,12 +95,14 @@ for k in range(m):
 
     B_k1 = (Id - tau * (1 - theta) * A) @ U_k + tau * theta * F_k1 + tau * (1 - theta) * F_k
 
+
     for j in [0, n]:
         for i in range(n+1):
             B_k1[I(i, j, n)] = g(a + i * h, a + j * h , t_k)
-            B_k1[I(j, i, n)] = g(a + j * h, a + i * h , t_k)
 
-
+    for i in [0, n]:
+        for j in range(n+1):
+            B_k1[I(i, j, n)] = g(a + i * h, a + j * h , t_k)
 
 
 

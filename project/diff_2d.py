@@ -207,6 +207,41 @@ if __name__ == '__main__':
 
     ######
 
+def fdm_poisson_2d_matrix_sparse(n, I):
+    # Grid size
+    h = 1.0 / n
+
+    # Total number of unknowns is N = (n+1)*(n+1)
+    N = (n + 1) ** 2
+
+    # Define zero matrix A of right size and insert 0
+    A = sp.dok_matrix((N, N))
+
+    # Define FD entries of A
+    hh = h * h
+    for j in range(1, n):
+        for i in range(1, n):
+            A[I(i, j, n), I(i, j, n)] = 4 / hh  # U_ij, center
+            A[I(i, j, n), I(i - 1, j, n)] = -1 / hh  # U_{i-1,j}, left
+            A[I(i, j, n), I(i + 1, j, n)] = -1 / hh  # U_{i+1,j}, right
+            A[I(i, j, n), I(i, j - 1, n)] = -1 / hh  # U_{i,j-1}, under
+            A[I(i, j, n), I(i, j + 1, n)] = -1 / hh  # U_{i,j+1}, over
+
+    # Incorporate boundary conditions
+    # Add points to grid related to boundary values on the bottom and on the top.
+    for j in [0, n]:
+        for i in range(0, n + 1):
+            # print("indeks", I(i, j, n))
+            A[I(i, j, n), I(i, j, n)] = 1
+
+    # Add boundary values related to unknowns from the first and last grid COLUMN
+    for i in [0, n]:
+        for j in range(0, n + 1):
+            # print("ind", I(i, j, n))
+            A[I(i, j, n), I(i, j, n)] = 1
+    A_csr = A.tocsr()
+    return A_csr
+
 
     plot2D(x, y, U_ex_grid - U_grid, title="difference")
     plt.show()
