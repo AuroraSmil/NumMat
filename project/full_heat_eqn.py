@@ -31,27 +31,28 @@ def fdm_poisson_2d_matrix_sparse(n, I):
     return A_csr
 
 
-a, b = 0, 2*np.pi
-n = 10
+# Space
+a, b = 0, 2 * np.pi
+n = 20
 h = (b - a) / n
-
 N = (n + 1) ** 2
+x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
 
-m = 5  # Time steps
+# Time
+m = 20  # Time steps
 t0 = 0  # sek
 T = 1  # sek
 
-x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
-
-A = fdm_poisson_2d_matrix_sparse(n, I)
-Id = np.eye(A.shape[0])
-
-tau = (T-t0) / m
+# Parameters
+tau = (T - t0) / m
 theta = 1
 
 k, l = 1, 1
 mu = k ** 2 + l ** 2
 kappa = 1.1
+
+A = fdm_poisson_2d_matrix_sparse(n, I)
+Id = np.eye(A.shape[0])
 
 
 def u_func(x, y, t, pck=np):
@@ -77,28 +78,12 @@ def f_expression():
 
 f = f_expression()
 
-
-"""
-x_v, y_v, t_v = sp.var("x_v y_v t_v")
-
-res = u_func(x_v, y_v, t_v, sp)
-
-print(res)
-print(laplace_u(res, x_v, y_v))
-print("")
-print(f(1, 2, 3))
-
-
-exit()
-"""
-
 g = u_func
 
-u_field = u_func(x, y, 0)
+u_field = u_func(x, y, t0)
 # U_0
 U_k1 = np.array([u_field[i, j] for j in range(n + 1) for i in range(n + 1)]).reshape((-1, 1))
 U_0_field = U_k1.reshape((n + 1, n + 1))
-
 
 # F_0
 F_k1 = f(x, y, 0).ravel().reshape((-1, 1))
@@ -127,7 +112,7 @@ for k in range(m):
     U_k1_field = U_k1.reshape((n + 1, n + 1))
 
     Us.append(U_k1_field)
-    plot2D(x, y, U_k1_field, "$U_" + str(k + 1) + "$")
+    # plot2D(x, y, U_k1_field, "$U_" + str(k + 1) + "$")
 
-plot_2D_animation(x, y, Us, title="Us", duration=10, zlim=(-1, 1))
+ani = plot_2D_animation(x, y, Us, title="Us", duration=10, zlim=(-1, 1))
 plt.show()
