@@ -138,30 +138,31 @@ def plot2D(X, Y, Z, title=""):
 
 
 #########################################################################################################
+if __name__ == '__main__':
 
-plot2D(x, y, U_ex_grid, title="$u(x,y)$")
-plt.show()
+    plot2D(x, y, U_ex_grid, title="$u(x,y)$")
+    plt.show()
 
-#########################################################################################################
+    #########################################################################################################
 
-# Evaluate f on the grid. The output will be a 2 dimensional array
-# where f_grid[i,j] = f(x_i, y_j)
-F_grid = f(x, y)
+    # Evaluate f on the grid. The output will be a 2 dimensional array
+    # where f_grid[i,j] = f(x_i, y_j)
+    F_grid = f(x, y)
 
-# Same game for boundary data g
-G_grid = g(x, y)
+    # Same game for boundary data g
+    G_grid = g(x, y)
 
-#########################################################################################################
-
-
-# To apply bcs we have to flatten out F which is done by the ravel function
-F = F_grid.ravel()
-
-# To apply bcs we have to flatten out G which is done by the ravel function
-G = G_grid.ravel()
+    #########################################################################################################
 
 
-#########################################################################################################
+    # To apply bcs we have to flatten out F which is done by the ravel function
+    F = F_grid.ravel()
+
+    # To apply bcs we have to flatten out G which is done by the ravel function
+    G = G_grid.ravel()
+
+
+    #########################################################################################################
 
 
 def apply_bcs(F, G, n, I):
@@ -175,34 +176,37 @@ def apply_bcs(F, G, n, I):
 
 #########################################################################################################
 
-# Linear algebra solvers from scipy
-import scipy.linalg as la
 
-# Compute the FDM matrix
-A = fdm_poisson_2d_matrix_dense(n, I)
+if __name__ == '__main__':
 
-# Apply bcs
-F = apply_bcs(F, G, n, I)
+    # Linear algebra solvers from scipy
+    import scipy.linalg as la
 
-print("SOLVING")
-print(A.shape)
-print(F.shape)
+    # Compute the FDM matrix
+    A = fdm_poisson_2d_matrix_dense(n, I)
 
-# Solve
-U = la.solve(A, F)
+    # Apply bcs
+    F = apply_bcs(F, G, n, I)
 
-# Make U into a grid function for plotting
-U_grid = U.reshape((n + 1, n + 1))
+    print("SOLVING")
+    print(A.shape)
+    print(F.shape)
 
-print("SOLVED")
+    # Solve
+    U = la.solve(A, F)
 
-# and plot f
-plot2D(x, y, U_grid, title="$u(x,y) løst$")
-plt.show()
+    # Make U into a grid function for plotting
+    U_grid = U.reshape((n + 1, n + 1))
+
+    print("SOLVED")
+
+    # and plot f
+    plot2D(x, y, U_grid, title="$u(x,y) løst$")
+    plt.show()
 
 
-######
+    ######
 
 
-plot2D(x, y, U_ex_grid - U_grid, title="difference")
-plt.show()
+    plot2D(x, y, U_ex_grid - U_grid, title="difference")
+    plt.show()
