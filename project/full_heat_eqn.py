@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import sympy as sp
 import scipy.sparse as sc
 
-from diff_2d import fdm_poisson_2d_matrix_dense, apply_bcs, I, plot2D
-from utils import plot_2D_animation
+from project.diff_2d import fdm_poisson_2d_matrix_dense, apply_bcs, I, plot2D
+from project.utils import plot_2D_animation
 
 
 def fdm_poisson_2d_matrix_sparse(n, I):
@@ -30,13 +30,14 @@ def fdm_poisson_2d_matrix_sparse(n, I):
     A_csr = A.tocsr()
     return A_csr
 
+
 a, b = 0, 1
 n = 10
 h = (b - a) / n
 
 N = (n + 1) ** 2
 
-m = 10  # Time steps
+m = 5  # Time steps
 t0 = 0  # sek
 T = 1  # sek
 
@@ -45,45 +46,62 @@ x, y = np.ogrid[0:1:(n + 1) * 1j, 0:1:(n + 1) * 1j]
 A = fdm_poisson_2d_matrix_sparse(n, I)
 Id = np.eye(A.shape[0])
 
-tau = 0.1
+tau = (T-t0) / m
 theta = 1
+
+k, l = 1, 1
+mu = k ** 2 + l ** 2
+kappa = 1.1
 
 
 def u_func(x, y, t, pck=np):
-    k, l = pck.pi, 2*pck.pi
-    mu = 1
     return pck.sin(k * x) * pck.sin(l * y) * pck.exp(-mu * t)
 
 
-
-def laplace_u(u_func, x, y, t):
-    # Automatic differerentiation of u_ex with sympy.
-    x_var, y_var, t_var = sp.var("x_var y_var t_var")
-    u_sp = u_func(x_var, y_var, t_var, sp)
-    dell_x = sp.diff(u_sp, x_var)
-    dell_y = sp.diff(u_sp, y_var)
+def laplace_u(u_func, x, y):
+    # Automatic differerentiation of u_func with sympy.
+    dell_x = sp.diff(u_func, x)
+    dell_y = sp.diff(u_func, y)
     # Set MINUS in front, to match diff equation
-    laplace = -(sp.diff(dell_x, x_var) + sp.diff(dell_y, y_var))
-    # Return as numpy function
-    return sp.lambdify((x_var, y_var, t_var), laplace, "numpy")(x, y, t)
+    laplace = sp.diff(dell_x, x) + sp.diff(dell_y, y)
+    return laplace
 
 
-def f(x, y, t):
-    return laplace_u(u_func, x, y, t)
+def f_expression():
+    x_var, y_var, t_var = sp.var("x_var y_var t_var")
+    u_func_sp = u_func(x_var, y_var, t_var, sp)
+    f_exp = sp.diff(u_func_sp, t_var) - kappa * laplace_u(u_func_sp, x_var, y_var)
+    print("f edp", f_exp)
+    return sp.lambdify((x_var, y_var, t_var), f_exp, "numpy")
+
+
+f = f_expression()
+
+
+"""
+x_v, y_v, t_v = sp.var("x_v y_v t_v")
+
+res = u_func(x_v, y_v, t_v, sp)
+
+print(res)
+print(laplace_u(res, x_v, y_v))
+print("")
+print(f(1, 2, 3))
+
+
+exit()
+"""
 
 g = u_func
-
 
 u_field = u_func(x, y, 0)
 U_k1 = np.array([u_field[i, j] for j in range(n + 1) for i in range(n + 1)]).reshape((-1, 1))
 
 U_0_field = U_k1.reshape((n + 1, n + 1))
 
-
 F_k1 = f(x, y, 0).ravel().reshape((-1, 1))
 
 Us = [U_0_field]
-
 
 for k in range(m):
     U_k = U_k1
@@ -95,16 +113,13 @@ for k in range(m):
 
     B_k1 = (Id - tau * (1 - theta) * A) @ U_k + tau * theta * F_k1 + tau * (1 - theta) * F_k
 
-
     for j in [0, n]:
-        for i in range(n+1):
-            B_k1[I(i, j, n)] = g(a + i * h, a + j * h , t_k)
+        for i in range(n + 1):
+            B_k1[I(i, j, n)] = g(a + i * h, a + j * h, t_k)
 
     for i in [0, n]:
-        for j in range(n+1):
-            B_k1[I(i, j, n)] = g(a + i * h, a + j * h , t_k)
-
-
+        for j in range(n + 1):
+            B_k1[I(i, j, n)] = g(a + i * h, a + j * h, t_k)
 
     U_k1 = np.linalg.solve((Id - tau * theta * A), B_k1)
     U_k1_field = U_k1.reshape((n + 1, n + 1))
@@ -112,6 +127,5 @@ for k in range(m):
     Us.append(U_k1_field)
     plot2D(x, y, U_k1_field, "$U_" + str(k + 1) + "$")
 
-
-# plot_2D_animation(x, y, Us, title="Us", duration=10, zlim=(-1, 1))
-# plt.show()
+plot_2D_animation(x, y, Us, title="Us", duration=10, zlim=(-1, 1))
+plt.show()
