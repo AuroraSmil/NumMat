@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sympy as sp
 
-from project.diff_2d import fdm_poisson_2d_matrix_dense, apply_bcs, I, plot2D
-from project.utils import plot_2D_animation
+from diff_2d import fdm_poisson_2d_matrix_dense, apply_bcs, I, plot2D
+from utils import plot_2D_animation
 
 a, b = 0, 1
 n = 10
@@ -32,6 +32,8 @@ def u_func(x, y, t, pck=np):
     mu = 1
     return pck.sin(k * x) * pck.sin(l * y) * pck.exp(-mu * t)
 
+g = u_func
+
 
 u_field = u_func(x, y, 0)
 U_k1 = np.array([u_field[i, j] for j in range(n + 1) for i in range(n + 1)]).reshape((-1, 1))
@@ -53,7 +55,14 @@ for k in range(m):
 
     B_k1 = (Id - tau * (1 - theta) * A) @ U_k + tau * theta * F_k1 + tau * (1 - theta) * F_k
 
-    # TODO boundary conditions: modify B_k1 for this
+    for j in [0, n]:
+        for i in range(n+1):
+            B_k1[I(i, j, n)] = g(a + i * h, a + j * h , t_k)
+            B_k1[I(j, i, n)] = g(a + j * h, a + i * h , t_k)
+
+
+
+
 
     U_k1 = np.linalg.solve((Id - tau * theta * A), B_k1)
     U_k1_field = U_k1.reshape((n + 1, n + 1))
