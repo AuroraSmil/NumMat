@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import sympy as sp
 import scipy.sparse as sc
 
-from project.diff_2d import fdm_poisson_2d_matrix_dense, apply_bcs, I, plot2D
+from project.diff_2d import apply_bcs, I, plot2D
 from project.utils import plot_2D_animation
 
 
@@ -31,7 +31,7 @@ def fdm_poisson_2d_matrix_sparse(n, I):
     return A_csr
 
 
-a, b = 0, 1
+a, b = 0, 2*np.pi
 n = 10
 h = (b - a) / n
 
@@ -41,7 +41,7 @@ m = 5  # Time steps
 t0 = 0  # sek
 T = 1  # sek
 
-x, y = np.ogrid[0:1:(n + 1) * 1j, 0:1:(n + 1) * 1j]
+x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
 
 A = fdm_poisson_2d_matrix_sparse(n, I)
 Id = np.eye(A.shape[0])
@@ -95,10 +95,12 @@ exit()
 g = u_func
 
 u_field = u_func(x, y, 0)
+# U_0
 U_k1 = np.array([u_field[i, j] for j in range(n + 1) for i in range(n + 1)]).reshape((-1, 1))
-
 U_0_field = U_k1.reshape((n + 1, n + 1))
 
+
+# F_0
 F_k1 = f(x, y, 0).ravel().reshape((-1, 1))
 
 Us = [U_0_field]
