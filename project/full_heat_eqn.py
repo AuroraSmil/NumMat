@@ -3,8 +3,12 @@ import matplotlib.pyplot as plt
 import sympy as sp
 import scipy.sparse as sc
 
-from project.diff_2d import apply_bcs, I, plot2D
-from project.utils import plot_2D_animation
+try:
+    from project.diff_2d import apply_bcs, I, plot2D
+    from project.utils import plot_2D_animation
+except ModuleNotFoundError:
+    from diff_2d import apply_bcs, I, plot2D
+    from utils import plot_2D_animation
 
 
 def fdm_poisson_2d_matrix_sparse(n, I):
@@ -80,28 +84,12 @@ def f_expression():
 
 f = f_expression()
 
-
-"""
-x_v, y_v, t_v = sp.var("x_v y_v t_v")
-
-res = u_func(x_v, y_v, t_v, sp)
-
-print(res)
-print(laplace_u(res, x_v, y_v))
-print("")
-print(f(1, 2, 3))
-
-
-exit()
-"""
-
 g = u_func
 
-u_field = u_func(x, y, 0)
+u_field = u_func(x, y, t0)
 # U_0
 U_k1 = np.array([u_field[i, j] for j in range(n + 1) for i in range(n + 1)]).reshape((-1, 1))
 U_0_field = U_k1.reshape((n + 1, n + 1))
-
 
 # F_0
 F_k1 = f(x, y, 0).ravel().reshape((-1, 1))
@@ -131,8 +119,8 @@ for k in range(m):
     U_k1_field = U_k1.reshape((n + 1, n + 1))
 
     Us.append(U_k1_field)
-    plot2D(x, y, U_k1_field, "$U_" + str({k + 1}) + "$")
 
-print(Us)
-plot_2D_animation(x, y, Us, title="Us", duration=10, zlim=(-1, 1)) #U er liste av matricer ikke array!!
+    # plot2D(x, y, U_k1_field, "$U_" + str(k + 1) + "$")
+
+ani = plot_2D_animation(x, y, Us, title="Us", duration=10, zlim=(-1, 1))
 plt.show()
