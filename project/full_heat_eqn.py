@@ -30,30 +30,33 @@ def fdm_poisson_2d_matrix_sparse(n, I):
     A_csr = A.tocsr()
     return A_csr
 
-
+#Angir initialverdier
 a, b = 0, 2*np.pi
 n = 10
-h = (b - a) / n
 
+h = (b - a) / n
 N = (n + 1) ** 2
 
-m = 5  # Time steps
-t0 = 0  # sek
-T = 1  # sek
+m = n  # Time steps, skal være lit n
+t0 = 0.5  # sek t start
+T = 1  # sek t stlutt
 
+#lager griddet
 x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
+
 
 A = fdm_poisson_2d_matrix_sparse(n, I)
 Id = np.eye(A.shape[0])
 
+#timestep
 tau = (T-t0) / m
-theta = 1
+theta = 0.5
 
-k, l = 1, 1
+k, l = 1, 1 #HVA SKAL DISSE VÆRE!!!!!
 mu = k ** 2 + l ** 2
-kappa = 1.1
+kappa = 1.1 # HVA SKAL DENNE VÆRE
 
-
+#Ekstakt funksjon
 def u_func(x, y, t, pck=np):
     return pck.sin(k * x) * pck.sin(l * y) * pck.exp(-mu * t)
 
@@ -107,14 +110,15 @@ Us = [U_0_field]
 
 for k in range(m):
     U_k = U_k1
-    t_k = k * (T - t0) / m
-    t_k1 = (k + 1) * (T - t0) / m
+    t_k = k * tau # endret fra (T-t0) / m til tau
+    t_k1 = (k + 1) * tau
 
     F_k = F_k1
     F_k1 = f(x, y, t_k1).ravel().reshape((-1, 1))
 
     B_k1 = (Id - tau * (1 - theta) * A) @ U_k + tau * theta * F_k1 + tau * (1 - theta) * F_k
 
+    #boundary conditions
     for j in [0, n]:
         for i in range(n + 1):
             B_k1[I(i, j, n)] = g(a + i * h, a + j * h, t_k)
@@ -127,7 +131,8 @@ for k in range(m):
     U_k1_field = U_k1.reshape((n + 1, n + 1))
 
     Us.append(U_k1_field)
-    plot2D(x, y, U_k1_field, "$U_" + str(k + 1) + "$")
+    plot2D(x, y, U_k1_field, "$U_" + str({k + 1}) + "$")
 
-plot_2D_animation(x, y, Us, title="Us", duration=10, zlim=(-1, 1))
+print(Us)
+plot_2D_animation(x, y, Us, title="Us", duration=10, zlim=(-1, 1)) #U er liste av matricer ikke array!!
 plt.show()
