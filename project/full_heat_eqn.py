@@ -41,8 +41,8 @@ n = 10
 h = (b - a) / n
 N = (n + 1) ** 2
 
-m = n  # Time steps, skal være lit n
-t0 = 0.5  # sek t start
+m = 2000  # Time steps, skal være lit n
+t0 = 0  # sek t start
 T = 1  # sek t stlutt
 
 #lager griddet
@@ -54,7 +54,7 @@ Id = np.eye(A.shape[0])
 
 #timestep
 tau = (T-t0) / m
-theta = 0.5
+theta = 0
 
 k, l = 1, 1 #HVA SKAL DISSE VÆRE!!!!!
 mu = k ** 2 + l ** 2
@@ -95,6 +95,7 @@ U_0_field = U_k1.reshape((n + 1, n + 1))
 F_k1 = f(x, y, 0).ravel().reshape((-1, 1))
 
 Us = [U_0_field]
+U_exakt = [U_0_field]
 
 for k in range(m):
     U_k = U_k1
@@ -115,12 +116,13 @@ for k in range(m):
         for j in range(n + 1):
             B_k1[I(i, j, n)] = g(a + i * h, a + j * h, t_k)
 
-    U_k1 = np.linalg.solve((Id - tau * theta * A), B_k1)
+    U_k1 = np.linalg.solve((Id + tau * theta * A), B_k1)
+
     U_k1_field = U_k1.reshape((n + 1, n + 1))
 
     Us.append(U_k1_field)
 
-    # plot2D(x, y, U_k1_field, "$U_" + str(k + 1) + "$")
+    #plot2D(x, y, U_k1_field, "$U_" + str(k + 1) + "$")
 
 ani = plot_2D_animation(x, y, Us, title="Us", duration=10, zlim=(-1, 1))
 plt.show()
