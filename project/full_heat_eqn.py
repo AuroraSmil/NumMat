@@ -6,7 +6,7 @@ import scipy.sparse as sc
 try:
     from project.diff_2d import apply_bcs, I, plot2D
     from project.utils import plot_2D_animation
-except ModuleNotFoundError:
+except Exception:
     from diff_2d import apply_bcs, I, plot2D
     from utils import plot_2D_animation
 
@@ -48,7 +48,6 @@ def f_expression(u_func, kappa):
     x_var, y_var, t_var = sp.var("x_var y_var t_var")
     u_func_sp = u_func(x_var, y_var, t_var, sp)
     f_exp = sp.diff(u_func_sp, t_var) - kappa * laplace_u(u_func_sp, x_var, y_var)
-    print("f edp", f_exp)
     return sp.lambdify((x_var, y_var, t_var), f_exp, "numpy")
 
 
