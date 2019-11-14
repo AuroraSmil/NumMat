@@ -90,21 +90,18 @@ def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b,
         F_k = F_k1
         F_k1 = f(x, y, t_k1).ravel().reshape((-1, 1))
 
+        # Calculate new B_k1
         B_k1 = (Id - tau * (1 - theta) * A) @ U_k + tau * theta * F_k1 + tau * (1 - theta) * F_k
 
-        # Boundary conditions
-        for j in [0, n]:
-            for i in range(n + 1):
-                B_k1[I(i, j, n)] = g(a + i * h, a + j * h, t_k)
+        # Apply border conditions
+        G = g(x, y, t_k).reshape((-1, 1))
+        B_k1 = apply_bcs(B_k1, G, n, I)
 
-        for i in [0, n]:
-            for j in range(n + 1):
-                B_k1[I(i, j, n)] = g(a + i * h, a + j * h, t_k)
-
+        # Solve linear system
         U_k1 = np.linalg.solve((Id + tau * theta * A), B_k1)
 
-        U_k1_field = U_k1.reshape((n + 1, n + 1))
-        u_field = u_func(x, y, t_k)
+        U_k1_field = U_k1.reshape((n + 1, n + 1))  # Numerical solution as n*n field
+        u_field = u_func(x, y, t_k)  # Exact solution
 
         Us.append(U_k1_field)
         U_exact.append(u_field)
@@ -135,7 +132,8 @@ def main():
     g = u_func
 
     x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
-    _, _, U_diff = heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, m, t0, T, homogeneous=False)
+    _, _, U_diff = heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, m, t0, T,
+                                                              homogeneous=False)
     ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
     # ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
     plt.show()
