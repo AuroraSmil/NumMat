@@ -41,7 +41,7 @@ n = 10
 h = (b - a) / n
 N = (n + 1) ** 2
 
-m = 2000  # Time steps, skal være lit n
+m = n  # Time steps, skal være lit n
 t0 = 0  # sek t start
 T = 1  # sek t stlutt
 
@@ -54,7 +54,7 @@ Id = np.eye(A.shape[0])
 
 #timestep
 tau = (T-t0) / m
-theta = 0
+theta = 1
 
 k, l = 1, 1 #HVA SKAL DISSE VÆRE!!!!!
 mu = k ** 2 + l ** 2
@@ -121,7 +121,14 @@ for k in range(m):
     U_k1_field = U_k1.reshape((n + 1, n + 1))
 
     Us.append(U_k1_field)
+    u_field = u_func(x, y, t_k)
+    # U_0
+    U_ex = np.array([u_field[i, j] for j in range(n + 1) for i in range(n + 1)]).reshape((-1, 1))
 
+
+    U_ex_field = U_ex.reshape((n + 1, n + 1))
+
+    U_exakt.append(U_k1_field - U_ex_field)
     #plot2D(x, y, U_k1_field, "$U_" + str(k + 1) + "$")
 
 ani = plot_2D_animation(x, y, Us, title="Us", duration=10, zlim=(-1, 1))
