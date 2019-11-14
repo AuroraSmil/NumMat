@@ -35,37 +35,6 @@ def fdm_poisson_2d_matrix_sparse(n, I):
     return A_csr
 
 
-# Grid size
-a, b = 0, 2 * np.pi
-n = 10
-
-h = (b - a) / n
-N = (n + 1) ** 2
-
-m = n  # Time steps, skal være lit n
-t0 = 0  # sek t start
-T = 1  # sek t stlutt
-
-# Create x, y grid
-x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
-
-A = fdm_poisson_2d_matrix_sparse(n, I)
-Id = np.eye(A.shape[0])
-
-# Time step
-tau = (T - t0) / m
-theta = 1
-
-k_const, l_const = 1, 1
-mu = k_const ** 2 + l_const ** 2
-kappa = 1.1
-
-
-# Exact function
-def u_func(x, y, t, pck=np):
-    return pck.sin(k_const * x) * pck.sin(l_const * y) * pck.exp(-mu * t)
-
-
 def laplace_u(u_func, x, y):
     # Automatic differentiation of u_func with sympy.
     dell_x = sp.diff(u_func, x)
@@ -75,7 +44,7 @@ def laplace_u(u_func, x, y):
     return laplace
 
 
-def f_expression():
+def f_expression(u_func, kappa):
     x_var, y_var, t_var = sp.var("x_var y_var t_var")
     u_func_sp = u_func(x_var, y_var, t_var, sp)
     f_exp = sp.diff(u_func_sp, t_var) - kappa * laplace_u(u_func_sp, x_var, y_var)
@@ -83,50 +52,92 @@ def f_expression():
     return sp.lambdify((x_var, y_var, t_var), f_exp, "numpy")
 
 
-f = f_expression()
+def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, m, t0, T, homogeneous=False):
+    # Create x, y grid
+    x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
+    # Time step
+    h = (b - a) / n
+    N = (n + 1) ** 2
+    tau = (T - t0) / m
+    A = fdm_poisson_2d_matrix_sparse(n, I)
+    Id = np.eye(A.shape[0])
 
-g = u_func
+    if homogeneous:
+        def f(x, y, t):
+            return x * y * 0
+    else:
+        f = f_expression(u_func, kappa)
 
-u_field = u_func(x, y, t0)
-# U_0
-U_k1 = np.array([u_field[i, j] for j in range(n + 1) for i in range(n + 1)]).reshape((-1, 1))
-U_0_field = U_k1.reshape((n + 1, n + 1))
+    ####################################
 
-# F_0
-F_k1 = f(x, y, 0).ravel().reshape((-1, 1))
+    u_field = u_func(x, y, t0)
+    # U_0
+    U_k1 = np.array([u_field[i, j] for j in range(n + 1) for i in range(n + 1)]).reshape((-1, 1))
+    U_0_field = U_k1.reshape((n + 1, n + 1))
 
-Us = [U_0_field]
-U_diff = [U_0_field]
-U_exact = [U_0_field]
+    # F_0
+    F_k1 = f(x, y, 0).ravel().reshape((-1, 1))
 
-for k in range(m):
-    U_k = U_k1
-    t_k = k * tau
-    t_k1 = (k + 1) * tau
+    Us = [U_0_field]
+    U_diff = [U_0_field]
+    U_exact = [U_0_field]
 
-    F_k = F_k1
-    F_k1 = f(x, y, t_k1).ravel().reshape((-1, 1))
+    for k in range(m):
+        U_k = U_k1
+        t_k = k * tau
+        t_k1 = (k + 1) * tau
 
-    B_k1 = (Id - tau * (1 - theta) * A) @ U_k + tau * theta * F_k1 + tau * (1 - theta) * F_k
+        F_k = F_k1
+        F_k1 = f(x, y, t_k1).ravel().reshape((-1, 1))
 
-    # Boundary conditions
-    for j in [0, n]:
-        for i in range(n + 1):
-            B_k1[I(i, j, n)] = g(a + i * h, a + j * h, t_k)
+        B_k1 = (Id - tau * (1 - theta) * A) @ U_k + tau * theta * F_k1 + tau * (1 - theta) * F_k
 
-    for i in [0, n]:
-        for j in range(n + 1):
-            B_k1[I(i, j, n)] = g(a + i * h, a + j * h, t_k)
+        # Boundary conditions
+        for j in [0, n]:
+            for i in range(n + 1):
+                B_k1[I(i, j, n)] = g(a + i * h, a + j * h, t_k)
 
-    U_k1 = np.linalg.solve((Id + tau * theta * A), B_k1)
+        for i in [0, n]:
+            for j in range(n + 1):
+                B_k1[I(i, j, n)] = g(a + i * h, a + j * h, t_k)
 
-    U_k1_field = U_k1.reshape((n + 1, n + 1))
-    u_field = u_func(x, y, t_k)
+        U_k1 = np.linalg.solve((Id + tau * theta * A), B_k1)
 
-    Us.append(U_k1_field)
-    U_exact.append(u_field)
-    U_diff.append(np.abs(U_k1_field - u_field))
+        U_k1_field = U_k1.reshape((n + 1, n + 1))
+        u_field = u_func(x, y, t_k)
 
-ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
-# ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
-plt.show()
+        Us.append(U_k1_field)
+        U_exact.append(u_field)
+        U_diff.append(np.abs(U_k1_field - u_field))
+
+    ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
+    # ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
+    plt.show()
+
+
+def main():
+    # Grid size
+    a, b = 0, 2 * np.pi
+    n = 10
+
+    m = n  # Time steps, skal være lit n
+    t0 = 0  # sek t start
+    T = 1  # sek t stlutt
+
+    theta = 1
+
+    kappa = 1.1
+
+    # Exact function
+    def u_func(x, y, t, pck=np):
+        k, l = 1, 1
+        mu = k ** 2 + l ** 2
+        return pck.sin(k * x) * pck.sin(l * y) * pck.exp(-mu * t)
+
+    g = u_func
+
+    heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, m, t0, T, homogeneous=False)
+
+
+if __name__ == '__main__':
+    main()
