@@ -110,9 +110,7 @@ def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b,
         U_exact.append(u_field)
         U_diff.append(np.abs(U_k1_field - u_field))
 
-    ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
-    # ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
-    plt.show()
+    return Us, U_exact, U_diff
 
 
 def main():
@@ -136,7 +134,11 @@ def main():
 
     g = u_func
 
-    heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, m, t0, T, homogeneous=False)
+    x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
+    _, _, U_diff = heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, m, t0, T, homogeneous=False)
+    ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
+    # ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
+    plt.show()
 
 
 if __name__ == '__main__':
