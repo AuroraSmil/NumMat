@@ -13,7 +13,7 @@ except Exception:
 
 def fdm_poisson_2d_matrix_sparse(n, I):
     # Grid size
-    h = 1.0 / n
+    h = 1.0 / n #denne er egentlig feil skal være 2pi
 
     # Total number of unknowns is N = (n+1)*(n+1)
     N = (n + 1) ** 2
@@ -50,29 +50,47 @@ def f_expression(u_func, kappa):
     f_exp = sp.diff(u_func_sp, t_var) - kappa * laplace_u(u_func_sp, x_var, y_var)
     return sp.lambdify((x_var, y_var, t_var), f_exp, "numpy")
 
+def u_0_step(x, y):
+    step = 0*np.ones_like(x)*np.ones_like(y)
 
-def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, m, t0, T, homogeneous=False):
+    def is_inside(x, y):
+        eps = 1e-10
+        return  np.abs(x - np.pi) < np.pi/3  and np.abs(y - np.pi) < np.pi/3
+
+    for i in range(x.shape[0]):
+        for j in range(y.shape[1]):
+            if is_inside(x[i,0], y[0,j]):
+                step[i,j] = 1
+    return step
+
+def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, tau, t0, T, homogeneous=False):
     # Create x, y grid
     x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
     # Time step
     h = (b - a) / n
     N = (n + 1) ** 2
-    tau = (T - t0) / m
-    A = fdm_poisson_2d_matrix_sparse(n, I)
+    m = int((T - t0) / tau)
+    A = fdm_poisson_2d_matrix_sparse(n, I) /(4*np.pi**2) # VIKTIG korrigering for A matrice fra oppg 1
     Id = np.eye(A.shape[0])
 
     if homogeneous:
         def f(x, y, t):
             return x * y * 0
+
+        u_field = u_0_step(x, y)
+        U_0_field = u_field
+        U_k1 = U_0_field.ravel().reshape((-1, 1))
+
+
     else:
         f = f_expression(u_func, kappa)
 
     ####################################
 
-    u_field = u_func(x, y, t0)
-    # U_0
-    U_k1 = np.array([u_field[i, j] for j in range(n + 1) for i in range(n + 1)]).reshape((-1, 1))
-    U_0_field = U_k1.reshape((n + 1, n + 1))
+        u_field = u_func(x, y, t0)
+        # U_0
+        U_k1 = np.array([u_field[i, j] for j in range(n + 1) for i in range(n + 1)]).reshape((-1, 1))
+        U_0_field = U_k1.reshape((n + 1, n + 1))
 
     # F_0
     F_k1 = f(x, y, 0).ravel().reshape((-1, 1))
@@ -114,7 +132,7 @@ def main():
     a, b = 0, 2 * np.pi
     n = 10
 
-    m = n  # Time steps, skal være lit n
+    tau = (b-a)/n  # Time steps, skal være lit n
     t0 = 0  # sek t start
     T = 1  # sek t stlutt
 
@@ -131,7 +149,7 @@ def main():
     g = u_func
 
     x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
-    _, _, U_diff = heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, m, t0, T,
+    _, _, U_diff = heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, tau, t0, T,
                                                               homogeneous=False)
     ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
     # ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))

@@ -26,7 +26,7 @@ if __name__ == '__main__':
     h = (2 * np.pi) / n
     tau_func = lambda alpha, h: (alpha*h**2)/4
 
-    tau = tau_func(alpha[2], h) #* 2*np.pi #/(2*np.pi), endret på a matrisen!!
+    tau = tau_func(alpha[0], h) #* 2*np.pi #/(2*np.pi), endret på a matrisen!!
     print(tau)
     m = int(T/tau)
 
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     def g(x, y, t):
         return x * y *0
 
-    U_num, Uex, Udiff = heat_equation_solver_manufactured_solution(u_func, g, kappa=1, theta=theta, n=n, a=a, b=b, m=m, t0=t0, T=T, homogeneous=True)
+    U_num, Uex, Udiff = heat_equation_solver_manufactured_solution(u_func, g, kappa=1, theta=theta, n=n, a=a, b=b, tau=tau, t0=t0, T=T, homogeneous=True)
     x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
 
     ani = plot_2D_animation(x, y, U_num, title="Us", duration=10, zlim=(-1, 1))
