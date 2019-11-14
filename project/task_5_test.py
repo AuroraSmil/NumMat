@@ -11,22 +11,24 @@ from utils import plot_2D_animation
 
 
 if __name__ == '__main__':
-
+    print("hei")
     a, b = 0, 2*np.pi
     n = 20
-    h = (b - a) / n
-    N = (n + 1) ** 2
 
+
+    N = (n + 1) ** 2
     t0 = 0  # sek t start
-    T = 1  # sek t stlutt
+    T = 20  # sek t stlutt
     theta  = 0
 
-    alpha = [0.9, 1, 1.1]
-    tau_func = lambda alpha, h: alpha*h**2/4
+    alpha = [0.9, 1, 1.01]
 
-    tau = tau_func(alpha[0], h)
+    h = (2 * np.pi) / n
+    tau_func = lambda alpha, h: (alpha*h**2)/4
+
+    tau = tau_func(alpha[2], h) #* 2*np.pi #/(2*np.pi), endret på a matrisen!!
     print(tau)
-    m = int(2*np.pi/tau)  # Time steps, skal være lit n
+    m = int(T/tau)
 
 
     # Exact function
@@ -45,3 +47,4 @@ if __name__ == '__main__':
     ani = plot_2D_animation(x, y, U_num, title="Us", duration=10, zlim=(-1, 1))
     # ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
     plt.show()
+
