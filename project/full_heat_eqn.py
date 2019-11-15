@@ -50,6 +50,7 @@ def f_expression(u_func, kappa):
     f_exp = sp.diff(u_func_sp, t_var) - kappa * laplace_u(u_func_sp, x_var, y_var)
     return sp.lambdify((x_var, y_var, t_var), f_exp, "numpy")
 
+
 def u_0_step(x, y):
     step = 0*np.ones_like(x)*np.ones_like(y)
 
@@ -63,6 +64,7 @@ def u_0_step(x, y):
                 step[i,j] = 1
     return step
 
+
 def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, tau, t0, T, homogeneous=False):
     # Create x, y grid
     x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
@@ -70,7 +72,7 @@ def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b,
     h = (b - a) / n
     N = (n + 1) ** 2
     m = int((T - t0) / tau)
-    A = fdm_poisson_2d_matrix_sparse(n, I) /(4*np.pi**2) # VIKTIG korrigering for A matrice fra oppg 1
+    A = fdm_poisson_2d_matrix_sparse(n, I) / (b - a)**2  # VIKTIG korrigering for A matrice fra oppg 1
     Id = np.eye(A.shape[0])
 
     if homogeneous:
@@ -80,12 +82,8 @@ def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b,
         u_field = u_0_step(x, y)
         U_0_field = u_field
         U_k1 = U_0_field.ravel().reshape((-1, 1))
-
-
     else:
         f = f_expression(u_func, kappa)
-
-    ####################################
 
         u_field = u_func(x, y, t0)
         # U_0
@@ -130,13 +128,13 @@ def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b,
 def main():
     # Grid size
     a, b = 0, 2 * np.pi
-    n = 20
+    n = 10
 
-    h= 2*np.pi/n
-    tau = h/(2*np.pi) # Time steps, skal være lit n
-    print(tau)
     t0 = 0  # sek t start
     T = 1  # sek t stlutt
+
+    h = 2 * np.pi/n
+    tau = h/(2*np.pi)  # Time steps, skal være lit n
 
     theta = 0
 
@@ -151,11 +149,12 @@ def main():
     g = u_func
 
     x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
-    _, _, U_diff = heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, tau, t0, T,
+    U_num, U_ex, U_diff = heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, tau, t0, T,
                                                               homogeneous=False)
-    ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
+    ani = plot_2D_animation(x, y, U_diff, title="U diff", duration=10, zlim=(-1, 1))
     # ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
     plt.show()
+
 
 
 if __name__ == '__main__':
