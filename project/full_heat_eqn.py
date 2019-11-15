@@ -96,7 +96,7 @@ def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b,
     F_k1 = f(x, y, 0).ravel().reshape((-1, 1))
 
     Us = [U_0_field]
-    U_diff = [U_0_field]
+    U_diff = [U_0_field-U_0_field]
     U_exact = [U_0_field]
     print(tau)
     for k in range(m):
