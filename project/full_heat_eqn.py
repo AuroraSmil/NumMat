@@ -98,7 +98,7 @@ def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b,
     Us = [U_0_field]
     U_diff = [U_0_field]
     U_exact = [U_0_field]
-
+    print(tau)
     for k in range(m):
         U_k = U_k1
         t_k = k * tau
@@ -130,13 +130,15 @@ def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b,
 def main():
     # Grid size
     a, b = 0, 2 * np.pi
-    n = 10
+    n = 20
 
-    tau = (b-a)/n  # Time steps, skal være lit n
+    h= 2*np.pi/n
+    tau = h/(2*np.pi) # Time steps, skal være lit n
+    print(tau)
     t0 = 0  # sek t start
     T = 1  # sek t stlutt
 
-    theta = 1
+    theta = 0
 
     kappa = 1.1
 
