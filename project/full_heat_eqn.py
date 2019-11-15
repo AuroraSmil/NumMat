@@ -150,8 +150,6 @@ def main():
     g = u_func
 
     x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
-    # TODO: kappa=1 gjør at alt krasher. Og det som er utrolig rart er at både numerisk og eksakt løsning krasher
-    # så koordinert at feilen blir mindre hmm...
     U_num, U_ex, U_diff = heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, tau, t0, T,
                                                                      homogeneous=True)
     ani1 = plot_2D_animation(x, y, U_num, title="U num", duration=5, zlim=(-1, 1))
