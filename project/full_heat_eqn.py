@@ -78,16 +78,18 @@ def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b,
     if homogeneous:
         def f(x, y, t):
             return x * y * 0
-
+        """
         u_field = u_0_step(x, y)
         U_0_field = u_field
         U_k1 = U_0_field.ravel().reshape((-1, 1))
     else:
         f = f_expression(u_func, kappa)
+        """
 
         u_field = u_func(x, y, t0)
         # U_0
-        U_k1 = np.array([u_field[i, j] for j in range(n + 1) for i in range(n + 1)]).reshape((-1, 1))
+        # U_k1 = np.array([u_field[i, j] for j in range(n + 1) for i in range(n + 1)]).reshape((-1, 1))
+        U_k1 = u_field.reshape((-1, 1))
         U_0_field = U_k1.reshape((n + 1, n + 1))
 
     # F_0
@@ -109,14 +111,14 @@ def heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b,
         B_k1 = (Id - tau * (1 - theta) * A) @ U_k + tau * theta * F_k1 + tau * (1 - theta) * F_k
 
         # Apply border conditions
-        G = g(x, y, t_k).reshape((-1, 1))
+        G = g(x, y, t_k1).reshape((-1, 1))
         B_k1 = apply_bcs(B_k1, G, n, I)
 
         # Solve linear system
         U_k1 = np.linalg.solve((Id + tau * theta * A), B_k1)
 
         U_k1_field = U_k1.reshape((n + 1, n + 1))  # Numerical solution as n*n field
-        u_field = u_func(x, y, t_k)  # Exact solution
+        u_field = u_func(x, y, t_k1)  # Exact solution
 
         Us.append(U_k1_field)
         U_exact.append(u_field)
@@ -136,22 +138,22 @@ def main():
     h = 2 * np.pi/n
     tau = h/(2*np.pi)  # Time steps, skal være lit n
 
-    theta = 0
+    theta = 0.5
 
-    kappa = 1.1
+    kappa = 1
 
     # Exact function
     def u_func(x, y, t, pck=np):
         k, l = 1, 1
-        mu = k ** 2 + l ** 2
+        mu = (k ** 2 + l ** 2) #*kappa
         return pck.sin(k * x) * pck.sin(l * y) * pck.exp(-mu * t)
 
     g = u_func
 
     x, y = np.ogrid[a:b:(n + 1) * 1j, a:b:(n + 1) * 1j]
     U_num, U_ex, U_diff = heat_equation_solver_manufactured_solution(u_func, g, kappa, theta, n, a, b, tau, t0, T,
-                                                              homogeneous=False)
-    ani = plot_2D_animation(x, y, U_diff, title="U diff", duration=10, zlim=(-1, 1))
+                                                              homogeneous=True)
+    ani = plot_2D_animation(x, y, U_diff, title="U diff", duration=10, zlim=(-0.05, 0.05))
     # ani = plot_2D_animation(x, y, U_diff, title="Us", duration=10, zlim=(-1, 1))
     plt.show()
 
